@@ -1,0 +1,7 @@
+-- scripts/sql/
+-- Place your SQL scripts in this folder.
+-- They are accessible in DAGs at: /usr/local/airflow/scripts/sql/your_script.sql
+--
+-- Example usage in a DAG:
+--   with open('/usr/local/airflow/scripts/sql/example.sql') as f:
+--       sql = f.read()

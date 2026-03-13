@@ -1,0 +1,3 @@
+# Place your incoming data files in this folder.
+# This directory is mounted into the container at /usr/local/airflow/data
+# and accessible from your DAGs via the DATA_DIR path.

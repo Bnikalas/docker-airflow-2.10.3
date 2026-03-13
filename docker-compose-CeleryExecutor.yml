@@ -16,7 +16,7 @@ services:
         #     - ./pgdata:/var/lib/postgresql/data/pgdata
 
     webserver:
-        image: puckel/docker-airflow:latest
+        image: puckel/docker-airflow:local
         restart: always
         depends_on:
             - postgres
@@ -25,14 +25,12 @@ services:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
-            # - REDIS_PASSWORD=redispass
+            - PYTHONPATH=/usr/local/airflow/scripts
         volumes:
             - ./dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
+            - ./plugins:/usr/local/airflow/plugins
+            - ./data:/usr/local/airflow/data
+            - ./scripts:/usr/local/airflow/scripts
         ports:
             - "8080:8080"
         command: webserver
@@ -43,7 +41,7 @@ services:
             retries: 3
 
     flower:
-        image: puckel/docker-airflow:latest
+        image: puckel/docker-airflow:local
         restart: always
         depends_on:
             - redis
@@ -55,38 +53,34 @@ services:
         command: flower
 
     scheduler:
-        image: puckel/docker-airflow:latest
+        image: puckel/docker-airflow:local
         restart: always
         depends_on:
             - webserver
         volumes:
             - ./dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
+            - ./plugins:/usr/local/airflow/plugins
+            - ./data:/usr/local/airflow/data
+            - ./scripts:/usr/local/airflow/scripts
         environment:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
-            # - REDIS_PASSWORD=redispass
+            - PYTHONPATH=/usr/local/airflow/scripts
         command: scheduler
 
     worker:
-        image: puckel/docker-airflow:latest
+        image: puckel/docker-airflow:local
         restart: always
         depends_on:
             - scheduler
         volumes:
             - ./dags:/usr/local/airflow/dags
-            # Uncomment to include custom plugins
-            # - ./plugins:/usr/local/airflow/plugins
+            - ./plugins:/usr/local/airflow/plugins
+            - ./data:/usr/local/airflow/data
+            - ./scripts:/usr/local/airflow/scripts
         environment:
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            # - POSTGRES_USER=airflow
-            # - POSTGRES_PASSWORD=airflow
-            # - POSTGRES_DB=airflow
-            # - REDIS_PASSWORD=redispass
+            - PYTHONPATH=/usr/local/airflow/scripts
         command: worker
